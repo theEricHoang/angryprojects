@@ -116,7 +116,7 @@ class _CounterWidgetState extends State<CounterWidget> {
     } else if (_counter > 50) {
       return Colors.green;
     }
-    return Colors.blue;
+    return Colors.black;
   }
 
   @override
