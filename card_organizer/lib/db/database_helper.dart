@@ -7,13 +7,13 @@ class DatabaseHelper {
 
   DatabaseHelper._init();
 
-  Future get database async {
+  Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDB('card_organizer.db');
     return _database!;
   }
 
-  Future _initDB(String filePath) async {
+  Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
