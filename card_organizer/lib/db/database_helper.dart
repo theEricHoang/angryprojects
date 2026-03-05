@@ -60,6 +60,34 @@ class DatabaseHelper {
     }
   }
 
+  // Map card name to its deckofcardsapi code
+  static String _cardCode(String cardName) {
+    switch (cardName) {
+      case 'Ace':
+        return 'A';
+      case '10':
+        return '0';
+      case 'Jack':
+        return 'J';
+      case 'Queen':
+        return 'Q';
+      case 'King':
+        return 'K';
+      default:
+        return cardName; // 2-9
+    }
+  }
+
+  // Map suit name to its single-letter code
+  static String _suitCode(String suit) {
+    return suit[0].toUpperCase(); // Hearts->H, Diamonds->D, Clubs->C, Spades->S
+  }
+
+  /// Build the full image URL for a card.
+  static String cardImageUrl(String cardName, String suit) {
+    return 'https://deckofcardsapi.com/static/img/${_cardCode(cardName)}${_suitCode(suit)}.png';
+  }
+
   Future _prepopulateCards(Database db) async {
     final suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
     final cards = [
@@ -83,8 +111,7 @@ class DatabaseHelper {
         await db.insert('cards', {
           'card_name': card,
           'suit': suits[folderId - 1],
-          'image_url':
-              'assets/cards/${suits[folderId - 1].toLowerCase()}_$card.png',
+          'image_url': cardImageUrl(card, suits[folderId - 1]),
           'folder_id': folderId,
         });
       }

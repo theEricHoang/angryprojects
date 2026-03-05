@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../db/database_helper.dart';
 import '../models/card.dart';
 import '../models/folder.dart';
 import '../repositories/card_repository.dart';
@@ -36,6 +37,22 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
 
   bool get _isEditing => widget.existingCard != null;
 
+  static const _standardCardNames = [
+    'Ace',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    'Jack',
+    'Queen',
+    'King',
+  ];
+
   static const _suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
 
   @override
@@ -51,7 +68,19 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
     _selectedSuit = widget.existingCard?.suit ?? 'Hearts';
     _selectedFolderId = widget.existingCard?.folderId ?? widget.folderId;
 
+    _nameController.addListener(_autoFillImageUrl);
     _loadFolders();
+  }
+
+  /// Auto-fill the image URL when card name and suit match a standard card.
+  void _autoFillImageUrl() {
+    final name = _nameController.text.trim();
+    if (_standardCardNames.contains(name)) {
+      _imageUrlController.text = DatabaseHelper.cardImageUrl(
+        name,
+        _selectedSuit,
+      );
+    }
   }
 
   Future<void> _loadFolders() async {
@@ -63,6 +92,7 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
 
   @override
   void dispose() {
+    _nameController.removeListener(_autoFillImageUrl);
     _nameController.dispose();
     _imageUrlController.dispose();
     super.dispose();
@@ -165,6 +195,7 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
                 onChanged: (value) {
                   if (value != null) {
                     setState(() => _selectedSuit = value);
+                    _autoFillImageUrl();
                   }
                 },
               ),
@@ -174,8 +205,8 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
               TextFormField(
                 controller: _imageUrlController,
                 decoration: const InputDecoration(
-                  labelText: 'Image URL (optional)',
-                  hintText: 'https://example.com/card.png',
+                  labelText: 'Image URL (auto-filled for standard cards)',
+                  hintText: 'https://deckofcardsapi.com/static/img/AS.png',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.image),
                 ),

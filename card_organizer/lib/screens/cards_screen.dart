@@ -182,7 +182,25 @@ class _CardListItem extends StatelessWidget {
           card.imageUrl!,
           width: 48,
           height: 64,
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              width: 48,
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            );
+          },
           errorBuilder: (context, error, stackTrace) => _placeholder(),
         ),
       );
